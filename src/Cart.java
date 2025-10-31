@@ -14,9 +14,22 @@ public class Cart {
 
     //tambahkan pesanan
     public void addToCart(Product product, int qty) {
-        this.qty[count] = qty;
-        this.cart[count] = product;
-        count++;
+        addToCart(product, qty, 0);
+    }
+
+    private void addToCart(Product product, int qty, int index) {
+        if (index >= count) {
+            cart[count] = product;
+            this.qty[count] = qty;
+            count++;
+            return;
+        }
+
+        if (cart[index] != null && cart[index].getProductName().equals(product.getProductName())) {
+            this.qty[index] += qty;
+            return;
+        }
+        addToCart(product, qty, index + 1);
     }
 
     public void setFreeDrink(Product freeDrink) {
