@@ -15,25 +15,32 @@ public class Product {
     public String getProductName() {
         return productName;
     }
-
     public int getPrice() {
         return price;
     }
-
     public String getCategory() {
         return category;
     }
 
-    // format harga ke dalam rupiah
-    private String currencyFormatted(int price) {
-        NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
-        return formatter.format(price).replace(",00", "");
+    public void setProductName(String name) {
+        this.productName = name;
     }
 
-    // tampilkan produk dalam bentuk string
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public static String currencyFormatted(int value) {
+        NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
+        return formatter.format(value).replace(",00", "");
+    }
+
     @Override
     public String toString() {
-        return "[" + category + "] "+ productName + " - " + currencyFormatted(price);
+        return "[" + category + "] " + productName + " - " + currencyFormatted(price);
     }
-
 }

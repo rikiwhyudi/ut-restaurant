@@ -1,112 +1,55 @@
-import java.text.NumberFormat;
-import java.util.Locale;
-
 public class Cart {
-    private Product[] cart = new Product[4];
-    private int[] qty = new int[4];
-    private int count = 0;
-    private Product freeDrink = null;
+    private CartItem[] items = new CartItem[0];
+    private Product freeDrink;
 
-    private String currencyFormatted(int price) {
-        NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
-        return formatter.format(price).replace(",00", "");
-    }
-
-    //tambahkan pesanan
     public void addToCart(Product product, int qty) {
-        addToCart(product, qty, 0);
-    }
-
-    private void addToCart(Product product, int qty, int index) {
-        if (index >= count) {
-            cart[count] = product;
-            this.qty[count] = qty;
-            count++;
-            return;
+        for (CartItem item : items) {
+            if (item.getProduct().getProductName().equalsIgnoreCase(product.getProductName())) {
+                item.setQty(item.getQty() + qty);
+                return;
+            }
         }
 
-        if (cart[index] != null && cart[index].getProductName().equals(product.getProductName())) {
-            this.qty[index] += qty;
-            return;
+        CartItem[] newArr = new CartItem[items.length + 1];
+        for (int i = 0; i < items.length; i++) {
+            newArr[i] = items[i];
         }
-        addToCart(product, qty, index + 1);
+        newArr[items.length] = new CartItem(product, qty);
+        items = newArr;
     }
 
-    public void setFreeDrink(Product freeDrink) {
-        this.freeDrink = freeDrink;
-    }
-
-    public int getCount() {
-        return count;
-    }
-
-    //hitung subtotal seluruh pesanan
-    public int getSubtotal(int index) {
-        if (index >= count) {
-            return 0;
+    public int getSubtotal(String category) {
+        int subtotal = 0;
+        for (CartItem item : items) {
+            if (category == null || item.getProduct().getCategory().equalsIgnoreCase(category)) {
+                subtotal += item.getTotal();
+            }
         }
-        return cart[index].getPrice() * qty[index] + getSubtotal(index + 1);
+        return subtotal;
     }
 
-    public void showCart(int index) {
-        if (index >= count) {
-            return;
-        }
-        int total = cart[index].getPrice() * qty[index];
-        System.out.println(cart[index].getProductName() + " x" + qty[index] + " = " + currencyFormatted(total));
-        showCart(index + 1);
-    }
-
-    //tampilkan struk pesanan
-    public void showReceipt() {
-        System.out.println("\n========= STRUK PEMBAYARAN =========");
-        showCart(0);
-
-        int subtotal = getSubtotal(0);
-        System.out.println("-".repeat(36));
-        System.out.println("Subtotal : " + currencyFormatted(subtotal));
-
-        double discount = 0;
-        double ppn = 0.10 * subtotal;
-        int service = 20000;
-        int total = (int) (subtotal - discount + service + ppn);
-
-        System.out.println("Biaya Pelayanan : " + currencyFormatted(service));
-
-        System.out.println("PPN 10% : " + currencyFormatted((int) ppn));
-
-        if (subtotal > 100000) {
-            discount = 0.10 * subtotal;
-            System.out.println("Diskon 10%: -" + currencyFormatted((int) discount));
-        }
-
-        if (freeDrink != null) {
-            System.out.println("Bonus Minuman: " + freeDrink.getProductName());
-        }
-
-        System.out.println("-".repeat(36));
-
-        System.out.println("GRAND TOTAL: " + currencyFormatted(total));
-
-        System.out.println("=".repeat(36));
-    }
-
-    //cek apakah gratis minuman
     public boolean isEligibleFreeDrink() {
-        return getSubtotal(0) > 50000;
+        if (getSubtotal("Minuman") > 50000) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    //hapus semua item dari keranjang pesanan
-    public void clearCart(int index) {
-        if (index >= cart.length) {
-            return;
-        }
-        cart[index] = null;
-        qty[index] = 0;
-        clearCart(index + 1);
-        if (index == 0) {
-            count = 0;
-            freeDrink = null;
-        }
+    public void setFreeDrink(Product drink) {
+        this.freeDrink = drink;
+    }
+
+    public Product getFreeDrink() {
+        return freeDrink;
+    }
+
+    public void clearCart() {
+        items = new CartItem[0];
+        freeDrink = null;
+    }
+
+    public CartItem[] getItems() {
+        return items;
     }
 }
