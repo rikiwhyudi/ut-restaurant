@@ -9,7 +9,7 @@ public class Main {
         Menu menu = new Menu();
         Cart cart = new Cart();
         runMainMenu(menu, cart, input);
-        System.out.println("\nTerima kasih telah menggunakan sistem restoran!");
+        System.out.println("\nTerima kasih, telah mencoba!");
         input.close();
     }
 

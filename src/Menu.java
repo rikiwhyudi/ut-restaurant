@@ -10,12 +10,29 @@ public class Menu {
         }
 
         Product[] newArr = new Product[products.length + 1];
-        for (int i = 0; i < products.length; i++) {
+        int insertIndex = 0;
+
+        if ("Makanan".equalsIgnoreCase(product.getCategory())) {
+            while (insertIndex < products.length && "Makanan".equalsIgnoreCase(products[insertIndex].getCategory())) {
+                insertIndex++;
+            }
+        } else {
+            insertIndex = products.length;
+        }
+
+        for (int i = 0; i < insertIndex; i++) {
             newArr[i] = products[i];
         }
-        newArr[products.length] = product;
+
+        newArr[insertIndex] = product;
+
+        for (int i = insertIndex; i < products.length; i++) {
+            newArr[i + 1] = products[i];
+        }
+
         products = newArr;
     }
+
 
     public void removeProduct(int index) {
         if (!isValidIndex(index)) {
