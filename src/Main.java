@@ -51,47 +51,62 @@ public class Main {
             return;
         }
 
-        displayMenu(menu);
-        addItemToCart(menu, cart, input);
+        boolean repeatOrder;
 
-        if (cart.isEligibleFreeDrink()) {
-            displayHeader("DAFTAR MINUMAN GRATIS");
-            menu.showDrinks();
-            System.out.println(SEPARATOR);
-            System.out.print("Pilih nomor produk (0 untuk tidak ambil): ");
+        do {
+            cart.clearCart();
+            repeatOrder = false;
 
-            int drinkChoice = readInt(input);
+            displayMenu(menu);
+            addItemToCart(menu, cart, input);
 
-            if (drinkChoice == 0) {
-                System.out.println("Tidak mengambil minuman gratis.");
-            } else {
-                Product selectedDrink = menu.getProduct(drinkChoice - 1);
-                if (selectedDrink != null && selectedDrink.getCategory().equalsIgnoreCase("Minuman")) {
-                    cart.setFreeDrink(selectedDrink);
-                    System.out.println("Bonus " + selectedDrink.getProductName() + " berhasil ditambahkan.");
+            if (cart.getItems().length == 0) {
+                System.out.println("Pemesanan dibatalkan.");
+                break;
+            }
+
+            if (cart.isEligibleFreeDrink()) {
+                displayHeader("DAFTAR MINUMAN GRATIS");
+                menu.showDrinks();
+                System.out.println(SEPARATOR);
+                System.out.print("Pilih nomor produk (0 untuk tidak ambil): ");
+
+                int drinkChoice = readInt(input);
+
+                if (drinkChoice == 0) {
+                    System.out.println("Tidak mengambil minuman gratis.");
                 } else {
-                    System.out.println("Pilihan bukan kategori minuman! Bonus diabaikan.");
+                    Product selectedDrink = menu.getProduct(drinkChoice - 1);
+                    if (selectedDrink != null && selectedDrink.getCategory().equalsIgnoreCase("Minuman")) {
+                        cart.setFreeDrink(selectedDrink);
+                        System.out.println("Bonus " + selectedDrink.getProductName() + " berhasil ditambahkan.");
+                    } else {
+                        System.out.println("Pilihan bukan kategori minuman! Bonus diabaikan.");
+                    }
                 }
             }
-        }
 
-        showReceipt(cart);
+            showReceipt(cart);
 
-        System.out.print("\nBuat pesanan baru? (y/n): ");
-        String again = input.next();
-        if (again.equalsIgnoreCase("y")) {
-            cart.clearCart();
-            startOrdering(menu, cart, input);
-        } else {
-            cart.clearCart();
-        }
+            System.out.print("\nBuat pesanan baru? (y/n): ");
+            String again = input.next();
+            if (again.equalsIgnoreCase("y")) {
+                repeatOrder = true;
+            }
+        } while (repeatOrder);
     }
 
     private static void addItemToCart(Menu menu, Cart cart, Scanner input) {
         boolean adding = true;
         while (adding) {
-            System.out.print("Masukkan nomor produk: ");
+            System.out.print("Masukkan nomor produk (0 = batal): ");
             int choice = readInt(input);
+
+            if (choice == 0) {
+                adding = false;
+                continue;
+            }
+
             Product selected = menu.getProduct(choice - 1);
 
             if (selected == null) {
@@ -136,7 +151,6 @@ public class Main {
         int subtotal = cart.getSubtotal(null);
 
         double discount = 0;
-
         if (subtotal > 100000) {
             discount = subtotal * 0.10;
         }
