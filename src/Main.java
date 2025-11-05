@@ -8,9 +8,21 @@ public class Main {
         Scanner input = new Scanner(System.in);
         Menu menu = new Menu();
         Cart cart = new Cart();
+        initializeMenu(menu);
         runMainMenu(menu, cart, input);
         System.out.println("\nTerima kasih, telah mencoba!");
         input.close();
+    }
+
+    private static void initializeMenu(Menu menu) {
+        menu.addProduct(new Product("Burger", 10000, "Makanan"));
+        menu.addProduct(new Product("Sandwich", 15000, "Makanan"));
+        menu.addProduct(new Product("Pizza", 20000, "Makanan"));
+        menu.addProduct(new Product("Fried Chicken", 15000, "Makanan"));
+        menu.addProduct(new Product("Ice Coffee", 5000, "Minuman"));
+        menu.addProduct(new Product("Ice Tea", 5000, "Minuman"));
+        menu.addProduct(new Product("Coca Cola", 5000, "Minuman"));
+        menu.addProduct(new Product("Lemon Tea", 10000, "Minuman"));
     }
 
     private static void runMainMenu(Menu menu, Cart cart, Scanner input) {
@@ -111,7 +123,7 @@ public class Main {
             return;
         }
 
-        displayHeader("STRUK PEMBELIAN");
+        displayHeader("STRUK PEMBAYARAN");
         for (CartItem item : items) {
             System.out.println(item.getProduct().getProductName() + " x" + item.getQty() +
                     " = " + Product.currencyFormatted(item.getTotal()));
@@ -122,24 +134,30 @@ public class Main {
         }
 
         int subtotal = cart.getSubtotal(null);
-        int discount = 0;
+
+        double discount = 0;
+
         if (subtotal > 100000) {
-            discount = subtotal * 10 / 100;
+            discount = subtotal * 0.10;
         }
-        int subtotalAfterDiscount = subtotal - discount;
-        int tax = subtotalAfterDiscount * 10 / 100;
-        int serviceFee = 20000;
-        int total = subtotalAfterDiscount + tax + serviceFee;
+
+        double subtotalAfterDiscount = subtotal - discount;
+        double tax = subtotalAfterDiscount * 0.10;
+        double serviceFee = 20000;
+
+        int total = (int) (subtotalAfterDiscount + tax + serviceFee);
 
         System.out.println(LINE);
         System.out.println("Subtotal      : " + Product.currencyFormatted(subtotal));
+
         if (discount > 0) {
-            System.out.println("Diskon (10%)  : -" + Product.currencyFormatted(discount));
+            System.out.println("Diskon (10%)  : -" + Product.currencyFormatted((int) discount));
         }
-        System.out.println(LINE);
-        System.out.println("PPN (10%)     : " + Product.currencyFormatted(tax));
-        System.out.println("Pelayanan     : " + Product.currencyFormatted(serviceFee));
-        System.out.println("Total         : " + Product.currencyFormatted(total));
+
+        System.out.println("PPN (10%)     : " + Product.currencyFormatted((int) tax));
+        System.out.println("Pelayanan     : " + Product.currencyFormatted((int) serviceFee));
+        System.out.println(SEPARATOR);
+        System.out.println("GRAND TOTAL   : " + Product.currencyFormatted(total));
         System.out.println(SEPARATOR);
     }
 
@@ -202,7 +220,7 @@ public class Main {
 
         displayHeader("UPDATE MENU");
         menu.showAllMenu();
-        System.out.println(LINE);
+        System.out.println(SEPARATOR);
 
         System.out.print("Pilih nomor produk untuk diupdate: ");
         int index = readInt(input) - 1;
@@ -243,7 +261,7 @@ public class Main {
 
         displayHeader("HAPUS MENU");
         menu.showAllMenu();
-        System.out.println(LINE);
+        System.out.println(SEPARATOR);
         System.out.print("Masukkan nomor produk yang ingin dihapus: ");
         int index = readInt(input) - 1;
 
