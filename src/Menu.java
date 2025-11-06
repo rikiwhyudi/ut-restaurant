@@ -29,13 +29,16 @@ public class Menu {
         for (int i = insertIndex; i < products.length; i++) {
             newArr[i + 1] = products[i];
         }
-
         products = newArr;
     }
 
+    // cek apakah index invalid
+    private boolean isInvalidIndex(int index) {
+        return index < 0 || index >= products.length;
+    }
 
     public void removeProduct(int index) {
-        if (!isValidIndex(index)) {
+        if (isInvalidIndex(index)) {
             return;
         }
 
@@ -52,36 +55,35 @@ public class Menu {
     }
 
     public void updateProductName(int index, String name) {
-        if (isValidIndex(index)) {
-            products[index].setProductName(name);
+        if (isInvalidIndex(index)) {
+            return;
         }
+        products[index].setProductName(name);
     }
 
     public void updateProductPrice(int index, int price) {
-        if (isValidIndex(index)) {
-            products[index].setPrice(price);
+        if (isInvalidIndex(index)) {
+            return;
         }
+        products[index].setPrice(price);
     }
 
     public void updateProductCategory(int index, String category) {
-        if (isValidIndex(index)) {
-            products[index].setCategory(category);
+        if (isInvalidIndex(index)) {
+            return;
         }
-    }
-
-    public Product[] getProducts() {
-        return products;
+        products[index].setCategory(category);
     }
 
     public Product getProduct(int index) {
-        if (!isValidIndex(index)) {
+        if (isInvalidIndex(index)) {
             return null;
         }
         return products[index];
     }
 
-    private boolean isValidIndex(int index) {
-        return index >= 0 && index < products.length;
+    public Product[] getProducts() {
+        return products;
     }
 
     public void showAllMenu() {

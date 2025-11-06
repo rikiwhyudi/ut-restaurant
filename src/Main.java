@@ -1,8 +1,8 @@
 import java.util.Scanner;
 
 public class Main {
-    private static final String SEPARATOR = "=".repeat(40);
-    private static final String LINE = "-".repeat(40);
+    private static final String SEPARATOR = "=".repeat(50);
+    private static final String LINE = "-".repeat(50);
 
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
@@ -10,7 +10,6 @@ public class Main {
         Cart cart = new Cart();
         initializeMenu(menu);
         runMainMenu(menu, cart, input);
-        System.out.println("\nTerima kasih, telah mencoba!");
         input.close();
     }
 
@@ -28,19 +27,18 @@ public class Main {
     private static void runMainMenu(Menu menu, Cart cart, Scanner input) {
         boolean running = true;
         while (running) {
-            displayHeader("MENU UTAMA");
+            displayHeader("MAIN MENU");
             System.out.println("1. Mulai Pemesanan");
             System.out.println("2. Kelola Menu");
-            System.out.println("3. Keluar");
             System.out.println(SEPARATOR);
-            System.out.print("Pilih: ");
+            System.out.print("Pilih (0 = keluar): ");
 
             int choice = readInt(input);
 
             switch (choice) {
                 case 1 -> startOrdering(menu, cart, input);
                 case 2 -> manageMenu(menu, input);
-                case 3 -> running = false;
+                case 0 -> running = false;
                 default -> System.out.println("Pilihan tidak valid!");
             }
         }
@@ -69,7 +67,7 @@ public class Main {
                 displayHeader("DAFTAR MINUMAN GRATIS");
                 menu.showDrinks();
                 System.out.println(SEPARATOR);
-                System.out.print("Pilih nomor produk (0 untuk tidak ambil): ");
+                System.out.print("Pilih nomor produk (0 = tidak ambil): ");
 
                 int drinkChoice = readInt(input);
 
@@ -81,7 +79,7 @@ public class Main {
                         cart.setFreeDrink(selectedDrink);
                         System.out.println("Bonus " + selectedDrink.getProductName() + " berhasil ditambahkan.");
                     } else {
-                        System.out.println("Pilihan bukan kategori minuman! Bonus diabaikan.");
+                        System.out.println("Pilihan bukan kategori minuman atau tidak ditemukan! Bonus diabaikan.");
                     }
                 }
             }
@@ -99,7 +97,7 @@ public class Main {
     private static void addItemToCart(Menu menu, Cart cart, Scanner input) {
         boolean adding = true;
         while (adding) {
-            System.out.print("Masukkan nomor produk (0 = batal): ");
+            System.out.print("Pilih nomor produk (0 = batal): ");
             int choice = readInt(input);
 
             if (choice == 0) {
@@ -183,9 +181,8 @@ public class Main {
             System.out.println("2. Tambah Menu");
             System.out.println("3. Update Menu");
             System.out.println("4. Hapus Menu");
-            System.out.println("5. Kembali");
             System.out.println(SEPARATOR);
-            System.out.print("Pilih: ");
+            System.out.print("Pilih (0 = kembali): ");
 
             int choice = readInt(input);
 
@@ -194,7 +191,7 @@ public class Main {
                 case 2 -> addMenuItem(menu, input);
                 case 3 -> updateMenuItem(menu, input);
                 case 4 -> deleteMenuItem(menu, input);
-                case 5 -> managing = false;
+                case 0 -> managing = false;
                 default -> System.out.println("Pilihan tidak valid!");
             }
         }
@@ -204,27 +201,42 @@ public class Main {
         if (isMenuEmpty(menu)) {
             return;
         }
-        displayHeader("DAFTAR MENU");
+        displayHeader("DAFTAR PRODUK");
         menu.showAllMenu();
         System.out.println(SEPARATOR);
     }
 
     private static void addMenuItem(Menu menu, Scanner input) {
-        displayHeader("TAMBAH MENU");
+        displayHeader("TAMBAHKAN PRODUK");
 
-        System.out.print("Nama produk: ");
+        System.out.print("Nama produk (0 = batal): ");
         input.nextLine();
         String name = input.nextLine().trim();
 
-        System.out.print("Harga: ");
-        int price = readInt(input);
+        if (name.equals("0")) {
+            System.out.println("Operasi dibatalkan.");
+            return;
+        }
 
-        System.out.print("Kategori (Makanan/Minuman): ");
-        input.nextLine();
-        String category = input.nextLine().trim();
+        if (!name.isEmpty()) {
 
-        menu.addProduct(new Product(name, price, category));
-        System.out.println("Produk berhasil ditambahkan!");
+            System.out.print("Harga: ");
+            int price = readInt(input);
+
+            System.out.print("Kategori (Makanan/Minuman): ");
+            input.nextLine();
+            String category = input.nextLine().trim();
+
+            if (!category.isEmpty()) {
+                menu.addProduct(new Product(name, price, category));
+                System.out.println("Produk berhasil ditambahkan!");
+            } else {
+                System.out.println("Kategori tidak boleh kosong! \nOperasi dibatalkan.");
+            }
+
+        } else {
+            System.out.println("Nama produk tidak boleh kosong! \nOperasi dibatalkan.");
+        }
     }
 
     private static void updateMenuItem(Menu menu, Scanner input) {
@@ -232,15 +244,22 @@ public class Main {
             return;
         }
 
-        displayHeader("UPDATE MENU");
+        displayHeader("UPDATE PRODUK");
         menu.showAllMenu();
         System.out.println(SEPARATOR);
 
-        System.out.print("Pilih nomor produk untuk diupdate: ");
-        int index = readInt(input) - 1;
+        System.out.print("Pilih nomor produk untuk diupdate (0 = batal): ");
+        int choice = readInt(input);
+
+        if (choice == 0) {
+            System.out.println("Operasi dibatalkan.");
+            return;
+        }
+
+        int index = choice - 1;
         input.nextLine();
 
-        if (index < 0 || index >= menu.getProducts().length) {
+        if (menu.getProduct(index) == null) {
             System.out.println("Nomor produk tidak valid.");
             return;
         }
@@ -256,6 +275,7 @@ public class Main {
         if (newPrice > 0) {
             menu.updateProductPrice(index, newPrice);
         }
+
         input.nextLine();
 
         System.out.print("Ubah kategori (kosongkan jika tidak): ");
@@ -263,7 +283,6 @@ public class Main {
         if (!newCategory.isEmpty()) {
             menu.updateProductCategory(index, newCategory);
         }
-
         System.out.println("Produk berhasil diperbarui!");
     }
 
@@ -273,13 +292,21 @@ public class Main {
             return;
         }
 
-        displayHeader("HAPUS MENU");
+        displayHeader("HAPUS PRODUK");
         menu.showAllMenu();
         System.out.println(SEPARATOR);
-        System.out.print("Masukkan nomor produk yang ingin dihapus: ");
-        int index = readInt(input) - 1;
+        System.out.print("Pilih nomor produk untuk dihapus (0 = batal): ");
 
-        if (index < 0 || index >= menu.getProducts().length) {
+        int choice = readInt(input);
+
+        if (choice == 0) {
+            System.out.println("Operasi dibatalkan.");
+            return;
+        }
+
+        int index = choice - 1;
+
+        if (menu.getProduct(index) == null) {
             System.out.println("Nomor produk tidak valid.");
             return;
         }
