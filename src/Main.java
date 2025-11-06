@@ -79,7 +79,7 @@ public class Main {
                         cart.setFreeDrink(selectedDrink);
                         System.out.println("Bonus " + selectedDrink.getProductName() + " berhasil ditambahkan.");
                     } else {
-                        System.out.println("Pilihan bukan kategori minuman atau tidak ditemukan! Bonus diabaikan.");
+                        System.out.println("Pilihan bukan kategori minuman! Bonus diabaikan.");
                     }
                 }
             }
@@ -264,26 +264,40 @@ public class Main {
             return;
         }
 
+        Product currentProduct = menu.getProduct(index);
+
+        System.out.println(LINE);
+        System.out.println("-> Produk yang dipilih: " + currentProduct.getProductName());
+        System.out.println(LINE);
+
         System.out.print("Ubah nama (kosongkan jika tidak): ");
         String newName = input.nextLine().trim();
-        if (!newName.isEmpty()) {
-            menu.updateProductName(index, newName);
-        }
 
         System.out.print("Ubah harga (0 jika tidak): ");
         int newPrice = readInt(input);
-        if (newPrice > 0) {
-            menu.updateProductPrice(index, newPrice);
-        }
 
         input.nextLine();
 
         System.out.print("Ubah kategori (kosongkan jika tidak): ");
         String newCategory = input.nextLine().trim();
-        if (!newCategory.isEmpty()) {
-            menu.updateProductCategory(index, newCategory);
+
+        System.out.print("\nTerapkan perubahan ini? (y/n): ");
+        String confirmUpdate = input.next();
+
+        if (confirmUpdate.equalsIgnoreCase("y")) {
+            if (!newName.isEmpty()) {
+                menu.updateProductName(index, newName);
+            }
+            if (newPrice > 0) {
+                menu.updateProductPrice(index, newPrice);
+            }
+            if (!newCategory.isEmpty()) {
+                menu.updateProductCategory(index, newCategory);
+            }
+            System.out.println("Produk berhasil diperbarui!");
+        } else {
+            System.out.println("Pembaruan dibatalkan.");
         }
-        System.out.println("Produk berhasil diperbarui!");
     }
 
 
@@ -311,8 +325,21 @@ public class Main {
             return;
         }
 
-        menu.removeProduct(index);
-        System.out.println("Produk berhasil dihapus!");
+        Product productToDelete = menu.getProduct(index);
+
+        System.out.println(LINE);
+        System.out.println("-> Produk yang dipilih: " + productToDelete.getProductName());
+        System.out.println(LINE);
+
+        System.out.print("\nYakin ingin menghapus produk? (y/n): ");
+        String confirmDelete = input.next();
+
+        if (confirmDelete.equalsIgnoreCase("y")) {
+            menu.removeProduct(index);
+            System.out.println("Produk berhasil dihapus!");
+        } else {
+            System.out.println("Penghapusan dibatalkan.");
+        }
     }
 
     private static boolean isMenuEmpty(Menu menu) {
@@ -333,7 +360,6 @@ public class Main {
             System.out.print("Masukkan angka yang valid: ");
             input.next();
         }
-        int result = input.nextInt();
-        return result;
+        return input.nextInt();
     }
 }
