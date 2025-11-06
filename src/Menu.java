@@ -40,7 +40,6 @@ public class Menu {
         for (int i = insertIndex; i < products.length; i++) {
             newArr[i + 1] = products[i];
         }
-
         return newArr;
     }
 

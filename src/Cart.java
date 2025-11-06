@@ -1,26 +1,26 @@
 public class Cart {
-    private CartItem[] items = new CartItem[0];
+    private CartItem[] carts = new CartItem[0];
     private Product freeDrink;
 
     public void addToCart(Product product, int qty) {
-        for (CartItem item : items) {
+        for (CartItem item : carts) {
             if (item.getProduct().getProductName().equalsIgnoreCase(product.getProductName())) {
                 item.setQty(item.getQty() + qty);
                 return;
             }
         }
 
-        CartItem[] newArr = new CartItem[items.length + 1];
-        for (int i = 0; i < items.length; i++) {
-            newArr[i] = items[i];
+        CartItem[] newArr = new CartItem[carts.length + 1];
+        for (int i = 0; i < carts.length; i++) {
+            newArr[i] = carts[i];
         }
-        newArr[items.length] = new CartItem(product, qty);
-        items = newArr;
+        newArr[carts.length] = new CartItem(product, qty);
+        carts = newArr;
     }
 
     public int getSubtotal(String category) {
         int subtotal = 0;
-        for (CartItem item : items) {
+        for (CartItem item : carts) {
             if (category == null || item.getProduct().getCategory().equalsIgnoreCase(category)) {
                 subtotal += item.getTotal();
             }
@@ -45,11 +45,11 @@ public class Cart {
     }
 
     public void clearCart() {
-        items = new CartItem[0];
+        carts = new CartItem[0];
         freeDrink = null;
     }
 
     public CartItem[] getItems() {
-        return items;
+        return carts;
     }
 }
